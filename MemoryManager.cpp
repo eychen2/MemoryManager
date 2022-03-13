@@ -69,13 +69,13 @@ void *MemoryManager::allocate(size_t sizeInBytes)
     {
         if(best<it->offset)
         {
-            memory.insert(it,chunk(best,sizeInBytes));
+            memory.insert(it,chunk(best,std::ceil((double)(sizeInBytes)/wordSize)));
             insert=true;
             break;
         }
     }
     if(!insert)
-        memory.emplace_back(chunk(best,sizeInBytes));
+        memory.emplace_back(chunk(best,std::ceil((double)(sizeInBytes)/wordSize)));
     return (char*)(start)+best;
 }
 void MemoryManager::free(void* address)
@@ -84,21 +84,45 @@ void MemoryManager::free(void* address)
     int length=-1;
     for(auto it=memory.begin();it!=memory.end();++it)
     {
-        if(offset<it->offset)
+        if(offset==it->offset)
         {
-            memory.erase(it);
             length=it->length;
+            memory.erase(it);
             break;
         }
     }
+    if(length==-1)
+        return;
+    bool merged=false;
     for(auto it =holes.begin();it!=holes.end();++it)
     {
-
+        if(it->offset+it->length==offset)
+        {
+            merged=true;
+            it->length+=length;
+        }
+        if(it->offset==offset+length&&merged)
+        {
+            int temp=it->length;
+            it--;
+            it->length+=temp;
+            ++it;
+            holes.erase(it);
+            return;
+        }
+        if(it->offset==offset+length&&!merged)
+        {
+            it->offset=offset;
+            it->length+=length;
+            return;
+        }
+        if(it->offset>offset+length&&!merged)
+            holes.insert(it,chunk(offset,length));
     }
 }
 int MemoryManager::dumpMemoryMap(char *filename)
 {
-    
+
 }
 unsigned MemoryManager::getWordSize()
 {

@@ -11,9 +11,12 @@ using namespace std;
 int main() {
     MemoryManager memoryManager(4,bestFit);
     memoryManager.initialize(12);
-    memoryManager.allocate(13);
-    memoryManager.allocate(12);
-    memoryManager.allocate(14);
+    void* test = memoryManager.allocate(13);
+    void* test2 = memoryManager.allocate(12);
+    void* test3 = memoryManager.allocate(14);
+    memoryManager.free(test3);
+    memoryManager.free(test);
+    memoryManager.free(test2);
     uint16_t* list = static_cast<uint16_t*>(memoryManager.getList());
     cout<<list[0]<<endl;
     uint16_t listLength = *list++;
