@@ -186,12 +186,12 @@ int bestFit(int sizeInWords, void *list)
     int diff = INT_MAX;
     uint16_t* holeList = static_cast<uint16_t*>(list);
     int size = *holeList++;
-    for(unsigned int i=0;i<size;i+=2)
+    for(unsigned int i=0;i<size;++i)
     {
-        if(holeList[i+1]>=sizeInWords&&holeList[i+1]-sizeInWords<diff)
+        if(holeList[2*i+1]>=sizeInWords&&holeList[2*i+1]-sizeInWords<diff)
         {
-            result=holeList[i];
-            diff=holeList[i+1]-sizeInWords;
+            result=holeList[2*i];
+            diff=holeList[2*i+1]-sizeInWords;
         }
     }
     return result;
@@ -204,10 +204,10 @@ int worstFit(int sizeInWords, void *list)
     int size = *holeList++;
     for(unsigned int i=0;i<size;i+=2)
     {
-        if(holeList[i+1]>=sizeInWords&&holeList[i+1]-sizeInWords>diff)
+        if(holeList[2*i+1]>=sizeInWords&&holeList[2*i+1]-sizeInWords>diff)
         {
-            result=holeList[i];
-            diff=holeList[i+1]-sizeInWords;
+            result=holeList[2*i];
+            diff=holeList[2*i+1]-sizeInWords;
         }
     }
     return result;
