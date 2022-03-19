@@ -7,7 +7,16 @@
 #include <utility>
 #include <sstream>
 #include <cmath>
-
+uint8_t binaryToDec(std::string input)
+{
+    uint8_t dec;
+    for(int i=input.size()-1; i>=0;i--)
+    {
+        dec*=2;
+        dec+=input[i]-'0';
+    }
+    return dec;
+}
 chunk::chunk(int offset_, int length_)
 {
     offset=offset_;
@@ -164,7 +173,51 @@ void* MemoryManager::getList()
 
 void* MemoryManager::getBitmap()
 {
-
+    int size = std::ceil((double)numWords/8)+2;
+    uint8_t* bitmap = new uint8_t[size];
+    std::string cheese;
+    auto hIt = holes.begin();
+    auto mIt = memory.begin();
+    while(hIt!=holes.end()&&mIt!=memory.end())
+    {
+        int num=0;
+        if(hIt->offset<mIt->offset)
+        {
+            for(unsigned int i=0; i<hIt->length;++i)
+                cheese+='0';
+            ++hIt;
+        }
+        else
+        {
+            for(unsigned int i=0; i<mIt->length;++i)
+                cheese+='1';
+            ++mIt;
+        }
+    }
+    while(hIt!=holes.end())
+    {
+        for(unsigned int i=0; i<hIt->length;++i)
+            cheese+='0';
+        ++hIt;
+    }
+    while(mIt!=memory.end())
+    {
+        for(unsigned int i=0; i<mIt->length;++i)
+            cheese+='1';
+        ++mIt;
+    }
+    bitmap[0]= size-2;
+    bitmap[1]= (size-2)>>8;
+    int count=2;
+    for(unsigned int i=0;i<numWords/8;++i)
+    {
+        std::string temp = cheese.substr(8*i,8);
+        bitmap[count]= binaryToDec(temp);
+        ++count;
+    }
+    std::string temp =  cheese.substr(8*(numWords/8),cheese.size()-(8*(numWords/8)));
+    bitmap[count]= binaryToDec(temp);
+    return bitmap;
 }
 
 unsigned int MemoryManager::getMemoryLimit()

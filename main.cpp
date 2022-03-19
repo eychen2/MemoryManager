@@ -167,7 +167,7 @@ unsigned int testSimpleFirstFit()
 
 
     unsigned int score = 0;
-    //score += testGetBitmap(memoryManager, correctBitmapLength, correctBitmap);
+    score += testGetBitmap(memoryManager, correctBitmapLength, correctBitmap);
     score += testGetList(memoryManager, correctListLength, correctList);
     //score += testDumpMemoryMap(memoryManager, "testSimpleFirstFit.txt", vectorToString(correctList));
 
@@ -215,7 +215,7 @@ unsigned int testSimpleBestFit()
 
     std::cout << "Testing Memory Manager state after allocation" << std::endl;
 
-    //score += testGetBitmap(memoryManager, correctBitmap.size(), correctBitmap);
+    score += testGetBitmap(memoryManager, correctBitmap.size(), correctBitmap);
     score += testGetList(memoryManager, correctListLength, correctList);
     //score += testDumpMemoryMap(memoryManager, "testSimpleBestFit.txt", vectorToString(correctList));
 
@@ -272,7 +272,7 @@ unsigned int testComplexBestFit()
     std::cout << "Testing Memory Manager state after freeing specific areas " << std::endl;
 
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfterFree.size(), correctBitmapAfterFree);
+    score += testGetBitmap(memoryManager, correctBitmapAfterFree.size(), correctBitmapAfterFree);
     score += testGetList(memoryManager, correctListLengthAfterFree, correctListAfterFree);
 
 
@@ -292,7 +292,7 @@ unsigned int testComplexBestFit()
     std::cout << "Testing Memory Manager state\n" << std::endl;
 
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfter1.size(), correctBitmapAfter1);
+    score += testGetBitmap(memoryManager, correctBitmapAfter1.size(), correctBitmapAfter1);
     score += testGetList(memoryManager, correctListLengthAfter1, correctListAfter1);
 
     std::cout << "Allocating 2 words" <<std::endl;
@@ -308,7 +308,7 @@ unsigned int testComplexBestFit()
     std::cout << "Testing Memory Manager state\n" << std::endl;
 
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfter2.size(), correctBitmapAfter2);
+    score += testGetBitmap(memoryManager, correctBitmapAfter2.size(), correctBitmapAfter2);
     score += testGetList(memoryManager, correctListLengthAfter2, correctListAfter2);
 
     std::cout << "Allocating 3 words" <<std::endl;
@@ -324,7 +324,7 @@ unsigned int testComplexBestFit()
     std::cout << "Testing Memory Manager state\n" << std::endl;
 
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfter3.size(), correctBitmapAfter3);
+    score += testGetBitmap(memoryManager, correctBitmapAfter3.size(), correctBitmapAfter3);
     score += testGetList(memoryManager, correctListLengthAfter3, correctListAfter3);
 
     uint32_t* testArray13 = static_cast<uint32_t*>(memoryManager.allocate(sizeof(uint32_t) * 4));
@@ -340,7 +340,7 @@ unsigned int testComplexBestFit()
     std::cout << "Testing Memory Manager state\n" << std::endl;
 
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfter4.size(), correctBitmapAfter4);
+    score += testGetBitmap(memoryManager, correctBitmapAfter4.size(), correctBitmapAfter4);
     score += testGetList(memoryManager, correctListLengthAfter4, correctListAfter4);
     //score += testDumpMemoryMap(memoryManager, "testComplexBestFit.txt", vectorToString(correctListAfter4));
 
@@ -386,7 +386,7 @@ unsigned int testNewAllocator()
 
     std::cout << "Testing Memory Manager state\n" << std::endl;
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfter1.size(), correctBitmapAfter1);
+    score += testGetBitmap(memoryManager, correctBitmapAfter1.size(), correctBitmapAfter1);
     score += testGetList(memoryManager, correctListLengthAfter1, correctListAfter1);
 
     std::cout << "Allocating 4 words" <<std::endl;
@@ -402,7 +402,7 @@ unsigned int testNewAllocator()
     std::cout << "Testing Memory Manager state\n" << std::endl;
 
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfter2.size(), correctBitmapAfter2);
+    score += testGetBitmap(memoryManager, correctBitmapAfter2.size(), correctBitmapAfter2);
     score += testGetList(memoryManager, correctListLengthAfter2, correctListAfter2);
 
     std::cout << "Allocating 4 words" <<std::endl;
@@ -418,7 +418,7 @@ unsigned int testNewAllocator()
     std::cout << "Testing Memory Manager state\n" << std::endl;
 
 
-    //score += testGetBitmap(memoryManager, correctBitmapAfter3.size(), correctBitmapAfter3);
+    score += testGetBitmap(memoryManager, correctBitmapAfter3.size(), correctBitmapAfter3);
     score += testGetList(memoryManager, correctListLengthAfter3, correctListAfter3);
     //score += testDumpMemoryMap(memoryManager, "testNewAllocator.txt", vectorToString(correctListAfter3));
 
@@ -494,7 +494,7 @@ unsigned int testRepeatedShutdown()
     unsigned int score = 0;
 
     std::cout << "Testing Memory Manager state\n" << std::endl;
-    //score += testGetBitmap(memoryManager, correctBitmap.size(), correctBitmap);
+    score += testGetBitmap(memoryManager, correctBitmap.size(), correctBitmap);
     score += testGetList(memoryManager, correctListLength, correctList);
     //score += testDumpMemoryMap(memoryManager, "testRepeatedShutdown.txt", vectorToString(correctList));
 

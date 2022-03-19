@@ -43,4 +43,5 @@ public:
 };
 int bestFit(int sizeInWords, void *list);
 int worstFit(int sizeInWords, void *list);
+uint8_t binaryToDec(std::string input);
 #endif //MEMORYMANAGER_MEMORYMANAGER_H
