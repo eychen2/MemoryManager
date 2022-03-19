@@ -17,6 +17,7 @@ struct chunk
 class MemoryManager
 {
 private:
+    int numWords=0;
     unsigned wordSize=0;
     std::function<int(int, void *)> allocator;
     void* start;
@@ -42,5 +43,4 @@ public:
 };
 int bestFit(int sizeInWords, void *list);
 int worstFit(int sizeInWords, void *list);
-std::string toHex(int input);
 #endif //MEMORYMANAGER_MEMORYMANAGER_H

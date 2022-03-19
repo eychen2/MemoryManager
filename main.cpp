@@ -104,10 +104,10 @@ int main()
     score += testMaxInitialization(); // 1
     std::cout << "Score: " << score << " / " <<  maxScore << std::endl;
 
-    //score += testGetters(); // 2
+    score += testGetters(); // 2
     std::cout << "Score: " << score << " / " <<  maxScore << std::endl;
 
-    //score += 5 * testReadingUsingGetMemoryStart(); // 1 * 5
+    score += 5 * testReadingUsingGetMemoryStart(); // 1 * 5
 
     std::cout << "Score: " << score << " / " <<  maxScore << std::endl;
 }

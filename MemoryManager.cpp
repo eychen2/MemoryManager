@@ -8,14 +8,6 @@
 #include <sstream>
 #include <cmath>
 
-std::string toHex(int input)
-{
-    std::stringstream sstream;
-    sstream << std::hex << input;
-    std::string result = sstream.str();
-    return result;
-
-}
 chunk::chunk(int offset_, int length_)
 {
     offset=offset_;
@@ -32,6 +24,7 @@ MemoryManager::~MemoryManager() {
 }
 void MemoryManager::initialize(size_t sizeInWords)
 {
+    numWords=sizeInWords;
     shutdown();
     start=malloc(sizeInWords*wordSize);
     holes.emplace_back(chunk(0,sizeInWords));
@@ -76,11 +69,11 @@ void *MemoryManager::allocate(size_t sizeInBytes)
     }
     if(!insert)
         memory.emplace_back(chunk(best,std::ceil((double)(sizeInBytes)/wordSize)));
-    return (char*)(start)+best;
+    return (char*)(start)+best*wordSize;
 }
 void MemoryManager::free(void* address)
 {
-    int offset=(int)((char*)(address)-(char*)(start));
+    int offset=((int)((char*)(address)-(char*)(start)))/wordSize;
     int length=-1;
     for(auto it=memory.begin();it!=memory.end();++it)
     {
@@ -176,6 +169,7 @@ void* MemoryManager::getBitmap()
 
 unsigned int MemoryManager::getMemoryLimit()
 {
+    return wordSize*numWords;
 }
 void MemoryManager::setAllocator(std::function<int(int, void *)> allocator) {
     this->allocator=allocator;
@@ -183,7 +177,7 @@ void MemoryManager::setAllocator(std::function<int(int, void *)> allocator) {
 int bestFit(int sizeInWords, void *list)
 {
     int result = -1;
-    int diff = INT_MAX;
+    int diff = INT16_MAX;
     uint16_t* holeList = static_cast<uint16_t*>(list);
     int size = *holeList++;
     for(unsigned int i=0;i<size;++i)
@@ -202,7 +196,7 @@ int worstFit(int sizeInWords, void *list)
     int diff = -1;
     uint16_t* holeList = static_cast<uint16_t*>(list);
     int size = *holeList++;
-    for(unsigned int i=0;i<size;i+=2)
+    for(unsigned int i=0;i<size;i++)
     {
         if(holeList[2*i+1]>=sizeInWords&&holeList[2*i+1]-sizeInWords>diff)
         {
