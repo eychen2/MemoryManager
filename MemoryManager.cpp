@@ -3,13 +3,14 @@
 //
 #include "MemoryManager.h"
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <iostream>
 #include <utility>
-#include <sstream>
 #include <cmath>
 uint8_t binaryToDec(std::string input)
 {
-    uint8_t dec;
+    uint8_t dec=0;
     for(int i=input.size()-1; i>=0;i--)
     {
         dec*=2;
@@ -33,8 +34,10 @@ MemoryManager::~MemoryManager() {
 }
 void MemoryManager::initialize(size_t sizeInWords)
 {
-    numWords=sizeInWords;
     shutdown();
+    if(sizeInWords>=65536)
+        sizeInWords=65536;
+    numWords=sizeInWords;
     start=malloc(sizeInWords*wordSize);
     holes.emplace_back(chunk(0,sizeInWords));
 }
@@ -46,13 +49,15 @@ void MemoryManager::shutdown()
     start=nullptr;
     holes.clear();
     memory.clear();
+
 }
 
 void *MemoryManager::allocate(size_t sizeInBytes)
 {
     uint16_t* list = static_cast<uint16_t*>(getList());
     int best = allocator(std::ceil((double)sizeInBytes/wordSize),list);
-    delete[] list;
+    if(list)
+        delete[] list;
     if(best==-1)
         return nullptr;
     for(auto it=holes.begin();it!=holes.end();++it)
@@ -124,7 +129,20 @@ void MemoryManager::free(void* address)
 }
 int MemoryManager::dumpMemoryMap(char *filename)
 {
-
+    int foo;
+    foo = open(filename, O_CREAT|O_RDWR, S_IRWXU);
+    if (foo == -1) {
+        return -1;
+    }
+    std::string cheese;
+    for(auto it=holes.begin();it!=holes.end();++it)
+    {
+        cheese += "[" + std::to_string(it->offset) + ", " + std::to_string(it->length) + "] - ";
+    }
+    cheese=cheese.substr(0,cheese.size()-3);
+    write(foo, cheese.c_str(), cheese.size());
+    close(foo);
+    return 0;
 }
 unsigned MemoryManager::getWordSize()
 {
@@ -137,38 +155,17 @@ void* MemoryManager::getMemoryStart()
 
 void* MemoryManager::getList()
 {
-    uint16_t* list = new uint16_t(2*holes.size()+1);
-    int count=0;
-    list[count++]=holes.size();
-    for(auto it = holes.begin();it!=holes.end();++it)
+    if(holes.empty())
+        return nullptr;
+    uint16_t* list = new uint16_t[1+(size_t)(holes.size())*2];
+    int count=1;
+    list[0]=(size_t)(holes.size());
+    for(auto it = holes.begin(); it!= holes.end();++it)
     {
         list[count++]=it->offset;
         list[count++]=it->length;
     }
     return list;
-    /*
-    char list[4*holes.size()+1];
-    int count=0;
-    std::string temp= toHex(holes.size());
-    list[count] = temp[0];
-    ++count;
-    list[count]=temp[1];
-    ++count;
-    for(auto it = holes.begin();it!=holes.end();++it)
-    {
-        temp = toHex(it->offset);
-        list[count]=temp[0];
-        ++count;
-        list[count]=temp[1];
-        ++count;
-        temp=toHex(it->length);
-        list[count]=temp[0];
-        ++count;
-        list[count]=temp[1];
-        ++count;
-    }
-    return list;
-     */
 }
 
 void* MemoryManager::getBitmap()
@@ -216,7 +213,8 @@ void* MemoryManager::getBitmap()
         ++count;
     }
     std::string temp =  cheese.substr(8*(numWords/8),cheese.size()-(8*(numWords/8)));
-    bitmap[count]= binaryToDec(temp);
+    if(temp.size()!=0)
+        bitmap[count]= binaryToDec(temp);
     return bitmap;
 }
 
@@ -230,8 +228,10 @@ void MemoryManager::setAllocator(std::function<int(int, void *)> allocator) {
 int bestFit(int sizeInWords, void *list)
 {
     int result = -1;
-    int diff = INT16_MAX;
+    int diff = INT32_MAX;
     uint16_t* holeList = static_cast<uint16_t*>(list);
+    if(!list)
+        return -1;
     int size = *holeList++;
     for(unsigned int i=0;i<size;++i)
     {
@@ -248,6 +248,8 @@ int worstFit(int sizeInWords, void *list)
     int result = -1;
     int diff = -1;
     uint16_t* holeList = static_cast<uint16_t*>(list);
+    if(!list)
+        return -1;
     int size = *holeList++;
     for(unsigned int i=0;i<size;i++)
     {
